@@ -1,0 +1,92 @@
+package Control;
+
+//@author Yung Ka Leong 24SMR06234
+
+import ADT.*;
+import Entity.Patient;
+import Utility.PatientFile;
+import Boundary.PatientMaintenanceUI;
+
+public class PatientMaintenance {
+    private ListInterface<Patient> patientList = new List<>();
+    private PatientFile patientFile = new PatientFile();
+    private PatientMaintenanceUI UI = new PatientMaintenanceUI();
+    
+    public PatientMaintenance(){
+        patientList = patientFile.readFromFile();
+        if(!patientList.isEmpty()){
+            patientList.getEntry(1).changeNextIdNumber(patientList.getEntry(patientList.getNumberOfEntries()));
+        }
+    }
+    
+    public void testPatientMaintenance(){
+        int select;
+        while(true){
+            select = UI.getMenuSelect();
+            
+            switch(select){
+                case 1:
+                    patientRegister();
+                    break;
+                case 2:
+                    viewPatientDetail(getFirstPatient());
+                    break;
+                case 3:
+                    viewPatientDetail(removeFirstPatient());
+                    break;
+                case 4:
+                    patientFile.saveToFile(patientList);
+                    System.out.println("Exit...");
+                    System.exit(0);
+                default:
+                    System.out.println("-- Unknown Option! Please select again. --");
+                    break;
+            }
+        }
+    }
+    
+    public void addNewPatient(Patient newPatient){
+        patientList.add(newPatient);
+        
+        System.out.println("New Patient was added in the Queuing");
+    }
+    
+    public void patientRegister(){
+        Patient newPatient = UI.newPatientDetail();
+        
+        System.out.println();
+        System.out.println("*** Patient Details ***");
+        viewPatientDetail(newPatient);
+        boolean isConfirm = UI.getConfirm();
+        
+        if(isConfirm){
+            addNewPatient(newPatient);
+        }
+        else{
+            System.out.println("The Registration is Cancel.");
+        }
+    }
+    
+    public Patient removeFirstPatient(){
+        return patientList.remove(1);
+    }
+    
+    public Patient getFirstPatient(){
+        return patientList.getEntry(1);
+    }
+    
+    public void viewPatientDetail(Patient givenPatient){
+        if(givenPatient != null){
+            System.out.println();
+            System.out.println(givenPatient.toString());
+        }
+        else{
+            System.out.println("-- The patient list is empty! --");
+        }
+    }
+    
+    public static void main(String[] args){
+        PatientMaintenance patientM = new PatientMaintenance();
+        patientM.testPatientMaintenance();
+    }
+}
