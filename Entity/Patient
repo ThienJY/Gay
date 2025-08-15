@@ -1,0 +1,109 @@
+package Entity;
+
+//@author Yung Ka Leong 24SMR06234
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.io.Serializable;
+
+public class Patient implements Serializable {
+    /* The assisted data */
+    private static int nextIdNumber = 10000;
+    private static final DateTimeFormatter myFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    
+    /* The attridutes */
+    private String patientID;           // Format: P + 'nextIdNumber' (eg. P0001, P0002)
+    private String name;
+    private String gender;                // Male / Female
+    private int age;
+    private LocalDate dateOfBirth;      // Format: DD/MM/YYYY (D = Day, M = Month, Y = Year)
+    private String phoneNumber;            // Format: 012-3456789
+    private String bloodType;           // Blood type: A, B, AB, O
+    
+    public Patient(){
+        nextIdNumber++;
+        patientID = "P" + nextIdNumber;
+        name = null;
+        gender = null;
+        age = 0;
+        dateOfBirth = null;
+        phoneNumber = null;
+        bloodType = null;
+    }
+    public Patient(String name, String gender, int age, LocalDate dateOfBirth, String phoneNumber, String bloodType){
+        nextIdNumber++;
+        patientID = Integer.toString(nextIdNumber).replaceFirst(".", "P");
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+        this.dateOfBirth = dateOfBirth;
+        this.phoneNumber = phoneNumber;
+        this.bloodType = bloodType;
+    }
+    
+    public String getPatientID(){
+        return patientID;
+    }
+    public String getName(){
+        return name;
+    }
+    public String getGender(){
+        return gender;
+    }
+    public int getAge(){
+        return age;
+    }
+    public LocalDate getDateOfBirth(){
+        return dateOfBirth;
+    }
+    public String getPhoneNumber(){
+        return phoneNumber;
+    }
+    public String getBloodType(){
+        return bloodType;
+    }
+    
+    public void setName(String name){
+        this.name = name;
+    }
+    public void setGender(String gender){
+        this.gender = gender;
+    }
+    public void setAge(int age){
+        this.age = age;
+    }
+    public void setDateOfBirth(LocalDate dateOfBirth){
+        this.dateOfBirth = dateOfBirth;
+    }
+    public void setPhoneNumber(String phoneNumber){
+        this.phoneNumber = phoneNumber;
+    }
+    public void setBloodType(String bloodType){
+        this.bloodType = bloodType;
+    }
+    
+    public void changeNextIdNumber(Patient patient){
+        if(patient != null){
+            int lastNextIdNumber = Integer.parseInt(patient.getPatientID().replaceFirst("P", "1"));
+            if(nextIdNumber <= lastNextIdNumber){
+                nextIdNumber = lastNextIdNumber;
+            }
+        }
+    }
+    
+    @Override
+    public String toString(){
+        String details = String.format("""
+                                       Patient ID       : %s
+                                       Name             : %s
+                                       Gender           : %s
+                                       Age              : %d
+                                       Date of Birth    : %s
+                                       Phone Number     : %s
+                                       Blood Type       : %s
+                                       """, 
+        patientID, name, gender, age, dateOfBirth.format(myFormat), phoneNumber, bloodType);
+        
+        return details;
+    }
+}
