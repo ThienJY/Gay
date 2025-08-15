@@ -1,0 +1,57 @@
+package Utility;
+
+//@author Yung Ka Leong 24SMR06234
+
+import java.io.*;
+import ADT.*;
+import Entity.Patient;
+
+public class PatientFile {
+    
+    private File myFile = new File("Patients.dat");
+     
+    public void saveToFile(ListInterface<Patient> patientList){
+        try{
+            if( !(myFile.exists()) ){
+                myFile.createNewFile();
+            }
+        
+            ObjectOutputStream ooStream = new ObjectOutputStream(new FileOutputStream(myFile));
+            ooStream.writeObject(patientList);
+            ooStream.close();
+        }
+        catch(FileNotFoundException ex){
+            ex.printStackTrace();
+            System.out.println("\nFile not found");
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+            System.out.println("\nCannot save to file");
+        }
+    }
+     
+    public ListInterface<Patient> readFromFile(){
+        ListInterface<Patient> patientList = new List<>();
+         
+        try{
+            if( !(myFile.exists()) ){
+                return patientList;
+            }
+             
+           ObjectInputStream oiStream = new ObjectInputStream(new FileInputStream(myFile));
+           patientList = (List<Patient>) (oiStream.readObject());
+           oiStream.close();
+        }
+        catch(IOException ex){
+            ex.printStackTrace();
+           System.out.println("\nCannot read from file.");
+        }
+        catch(ClassNotFoundException ex){
+            ex.printStackTrace();
+           System.out.println("\nClass not found.");
+        }
+        finally{
+           return patientList;
+        }
+    }
+}
