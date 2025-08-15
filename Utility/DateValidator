@@ -1,0 +1,22 @@
+package Utility;
+
+//@author Yung Ka Leong 24SMR06234
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+public class DateValidator {
+    public static LocalDate getValidDate(String dateStr){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        
+        try{
+            LocalDate validDate = LocalDate.parse(dateStr, formatter);
+            
+            return validDate;
+        }
+        catch(DateTimeParseException ex){
+            return null;
+        }
+    }
+}
