@@ -1,0 +1,139 @@
+package Boundary;
+
+//@author Yung Ka Leong 24SMR06234
+
+import Entity.Patient;
+import Utility.DateValidator;
+import java.util.Scanner;
+import java.time.LocalDate;
+
+public class PatientMaintenanceUI {
+    Scanner scanner = new Scanner(System.in);
+    
+    public int getMenuSelect(){
+        System.out.println("""
+                           == Patient Management Page ==
+                           1. Patient register
+                           2. View first Patient
+                           3. Remove first Patient
+                           4. Exit """);
+        System.out.print(" > ");
+        int select = scanner.nextInt();
+        resetScanner();
+        
+        return select;
+    }
+    
+    public Patient newPatientDetail(){
+        String name = getPatientName();
+        String gender = getPatientGender();
+        int age = getPatientAge();
+        LocalDate birthOfDate = getPatientBirthDate();
+        String phoneNumber = getPatientPhoneNumber();
+        String bloodType = getPatientBloodType();
+        
+        return new Patient(name, gender, age, birthOfDate, phoneNumber, bloodType);
+    }
+    
+    private String getPatientName(){
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+        resetScanner();
+        
+        if(name != null)
+            return name;
+        else{
+            System.out.println("-- The name can't be empty! Please Enter again. --");
+            return getPatientName();
+        }
+    }
+    private String getPatientGender(){
+        System.out.print("Enter your gender (e.g. M = male,F = female): ");
+        String gender = scanner.nextLine();
+        resetScanner();
+        
+        if(gender.equalsIgnoreCase("M") || gender.equalsIgnoreCase("Male"))
+            return "Male";
+        else if(gender.equalsIgnoreCase("F") || gender.equalsIgnoreCase("Female"))
+            return "Female";
+        else{
+            System.out.println("-- Incorrent Gender! Please Enter again. --");
+            return getPatientGender();
+        }
+    }
+    private int getPatientAge(){
+        System.out.print("Enter your age: ");
+        int age = scanner.nextInt();
+        resetScanner();
+        
+        if(age < 1){
+            System.out.println("-- The age is Too young! Please Enter again. --");
+            return getPatientAge();
+        }
+        else if(age > 150){
+            System.out.println("-- The age is Too old! Please Enter again. --");
+            return getPatientAge();
+        }
+        else
+            return age;
+    }
+    private LocalDate getPatientBirthDate(){
+        System.out.print("Enter your Date of Birth (e.g. 15/06/2010): ");
+        String birthDateStr = scanner.nextLine();
+        resetScanner();
+        
+        LocalDate birthDate = DateValidator.getValidDate(birthDateStr);
+        
+        if(birthDate != null)
+            return birthDate;
+        else{
+            System.out.println("-- Invalid date or format! Please Enter again. --");
+            return getPatientBirthDate();
+        }
+    }
+    private String getPatientPhoneNumber(){
+        System.out.print("Enter yout Phone number (e.g. 012-3456789): ");
+        String phoneNumber = scanner.nextLine();
+        resetScanner();
+        
+        if(phoneNumber.matches("\\d{3}-\\d{7}$"))
+            return phoneNumber;
+        else{
+            System.out.println("-- Invalid format! Please Enter again. --");
+            return getPatientPhoneNumber();
+        }
+    }
+    private String getPatientBloodType(){
+        System.out.print("Enter your blood type [ A, B, AB, O ]: ");
+        String bloodType = scanner.nextLine();
+        resetScanner();
+        
+        if(bloodType.equalsIgnoreCase("A") || bloodType.equalsIgnoreCase("B") ||
+            bloodType.equalsIgnoreCase("AB") || bloodType.equalsIgnoreCase("O")){
+            return bloodType;
+        }
+        else{
+            System.out.println("-- Unknown Blood Type! Please Enter again. --");
+            return getPatientBloodType();
+        }
+    }
+    
+    public boolean getConfirm(){
+        System.out.print("Are you confirm for this register? [(Y)es / (N)o ]: ");
+        String confirm = scanner.nextLine();
+        resetScanner();
+        
+        if(confirm.equalsIgnoreCase("Y") || confirm.equalsIgnoreCase("Yes"))
+            return true;
+        else if(confirm.equalsIgnoreCase("N") || confirm.equalsIgnoreCase("No"))
+            return false;
+        else{
+            System.out.println("-- Unknown Option! Please Enter again. --");
+            return getConfirm();
+        }
+    }
+    
+    private void resetScanner(){
+        scanner = new Scanner(System.in);
+    }
+}
