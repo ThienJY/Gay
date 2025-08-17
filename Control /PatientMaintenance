@@ -29,9 +29,13 @@ public class PatientMaintenance {
                     patientRegister();
                     break;
                 case 2:
+                    System.out.println();
+                    System.out.println("*** The first patient details ***");
                     viewPatientDetail(getFirstPatient());
                     break;
                 case 3:
+                    System.out.println();
+                    System.out.println("*** Removed patient details ***");
                     viewPatientDetail(removeFirstPatient());
                     break;
                 case 4:
@@ -77,7 +81,6 @@ public class PatientMaintenance {
     
     public void viewPatientDetail(Patient givenPatient){
         if(givenPatient != null){
-            System.out.println();
             System.out.println(givenPatient.toString());
         }
         else{
