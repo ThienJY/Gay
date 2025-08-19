@@ -51,6 +51,7 @@ public class PatientMaintenance {
     
     public void addNewPatient(Patient newPatient){
         patientList.add(newPatient);
+        patientFile.saveToFile(patientList);
         
         System.out.println("New Patient was added in the Queuing");
     }
@@ -72,7 +73,9 @@ public class PatientMaintenance {
     }
     
     public Patient removeFirstPatient(){
-        return patientList.remove(1);
+        Patient removedPatient = patientList.remove(1);
+        patientFile.saveToFile(patientList);
+        return removedPatient;
     }
     
     public Patient getFirstPatient(){
@@ -84,8 +87,23 @@ public class PatientMaintenance {
             System.out.println(givenPatient.toString());
         }
         else{
+            System.out.println("-- The patient object is empty! --");
+        }
+    }
+    
+    public void reportSummary(){
+        if(patientList.isEmpty()){
             System.out.println("-- The patient list is empty! --");
         }
+        else{
+            System.out.println("*** Summary of the Patient Queue ***");
+            for(int i = 1; i <= patientList.getNumberOfEntries(); i++){
+                Patient p = patientList.getEntry(i);
+                System.out.printf("%d. %s [%s], Age: %d", 
+                    i, p.getName(), p.getGender(), p.getAge());
+            }
+        }
+        
     }
     
     public static void main(String[] args){
