@@ -10,14 +10,14 @@ public class PatientFile {
     
     private File myFile = new File("Patients.dat");
      
-    public void saveToFile(ListInterface<Patient> patientList){
+    public void saveToFile(QueueInterface<Patient> patientQueue){
         try{
             if( !(myFile.exists()) ){
                 myFile.createNewFile();
             }
         
             ObjectOutputStream ooStream = new ObjectOutputStream(new FileOutputStream(myFile));
-            ooStream.writeObject(patientList);
+            ooStream.writeObject(patientQueue);
             ooStream.close();
         }
         catch(FileNotFoundException ex){
@@ -30,16 +30,16 @@ public class PatientFile {
         }
     }
      
-    public ListInterface<Patient> readFromFile(){
-        ListInterface<Patient> patientList = new List<>();
+    public QueueInterface<Patient> readFromFile(){
+        QueueInterface<Patient> patientQueue = new LinkedQueue<>();
          
         try{
             if( !(myFile.exists()) ){
-                return patientList;
+                return patientQueue;
             }
              
            ObjectInputStream oiStream = new ObjectInputStream(new FileInputStream(myFile));
-           patientList = (List<Patient>) (oiStream.readObject());
+           patientQueue = (LinkedQueue<Patient>) (oiStream.readObject());
            oiStream.close();
         }
         catch(IOException ex){
@@ -51,7 +51,7 @@ public class PatientFile {
            System.out.println("\nClass not found.");
         }
         finally{
-           return patientList;
+           return patientQueue;
         }
     }
 }
