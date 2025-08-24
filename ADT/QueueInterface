@@ -1,0 +1,20 @@
+package ADT;
+
+//@author Yung Ka Leong 24SMR06234
+
+import java.io.Serializable;
+
+public interface QueueInterface<T> extends Serializable{
+    
+    public void enqueue(T newEntry);
+    
+    public T dequeue();
+    
+    public T getFront();
+    
+    public T[] getArray();
+    
+    public boolean isEmpty();
+    
+    public void clear();
+}
