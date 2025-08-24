@@ -8,11 +8,9 @@ import java.io.Serializable;
 
 public class Patient implements Serializable {
     /* The assisted data */
-    private static int nextIdNumber = 10000;
     private static final DateTimeFormatter myFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     
     /* The attridutes */
-    private String patientID;           // Format: P + 'nextIdNumber' (eg. P0001, P0002)
     private String name;
     private String gender;                // Male / Female
     private int age;
@@ -21,8 +19,6 @@ public class Patient implements Serializable {
     private String bloodType;           // Blood type: A, B, AB, O
     
     public Patient(){
-        nextIdNumber++;
-        patientID = "P" + nextIdNumber;
         name = null;
         gender = null;
         age = 0;
@@ -31,8 +27,6 @@ public class Patient implements Serializable {
         bloodType = null;
     }
     public Patient(String name, String gender, int age, LocalDate dateOfBirth, String phoneNumber, String bloodType){
-        nextIdNumber++;
-        patientID = Integer.toString(nextIdNumber).replaceFirst(".", "P");
         this.name = name;
         this.gender = gender;
         this.age = age;
@@ -41,9 +35,6 @@ public class Patient implements Serializable {
         this.bloodType = bloodType;
     }
     
-    public String getPatientID(){
-        return patientID;
-    }
     public String getName(){
         return name;
     }
@@ -82,19 +73,9 @@ public class Patient implements Serializable {
         this.bloodType = bloodType;
     }
     
-    public void changeNextIdNumber(Patient patient){
-        if(patient != null){
-            int lastNextIdNumber = Integer.parseInt(patient.getPatientID().replaceFirst("P", "1"));
-            if(nextIdNumber <= lastNextIdNumber){
-                nextIdNumber = lastNextIdNumber;
-            }
-        }
-    }
-    
     @Override
     public String toString(){
         String details = String.format("""
-                                       Patient ID       : %s
                                        Name             : %s
                                        Gender           : %s
                                        Age              : %d
@@ -102,7 +83,7 @@ public class Patient implements Serializable {
                                        Phone Number     : %s
                                        Blood Type       : %s
                                        """, 
-        patientID, name, gender, age, dateOfBirth.format(myFormat), phoneNumber, bloodType);
+        name, gender, age, dateOfBirth.format(myFormat), phoneNumber, bloodType);
         
         return details;
     }
