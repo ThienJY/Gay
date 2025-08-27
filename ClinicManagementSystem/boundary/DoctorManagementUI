@@ -1,0 +1,152 @@
+//Ethan
+package boundary;
+
+import control.DoctorManagementControl;
+import entity.Doctor;
+import adt.ListInterface;
+import java.util.Scanner;
+
+public class DoctorManagementUI {
+    private DoctorManagementControl control;
+    private Scanner scanner;
+
+    public DoctorManagementUI() {
+        control = new DoctorManagementControl();
+        scanner = new Scanner(System.in);
+    }
+
+    public void start() {
+        while (true) {
+            System.out.println("\n=== Doctor Management Module ===");
+            System.out.println("1. Add Doctor");
+            System.out.println("2. Update Doctor");
+            System.out.println("3. Delete Doctor");
+            System.out.println("4. View All Doctors");
+            System.out.println("5. Generate Specialty Summary Report");
+            System.out.println("6. Generate Doctor Schedule Availability Report");
+            System.out.println("7. Exit");
+            System.out.print("Enter choice: ");
+            int choice;
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid choice. Please enter a number between 1 and 7.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1:
+                    addDoctor();
+                    break;
+                case 2:
+                    updateDoctor();
+                    break;
+                case 3:
+                    deleteDoctor();
+                    break;
+                case 4:
+                    viewDoctor();
+                    break;
+                case 5:
+                    System.out.println(control.generateSpecialtySummaryReport());
+                    break;
+                case 6:
+                    System.out.print("Enter day (e.g., Monday): ");
+                    String day = scanner.nextLine();
+                    System.out.println(control.generateScheduleAvailabilityReport(day));
+                    break;
+                case 7:
+                    System.out.println("Exiting Doctor Management Module...");
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please enter a number between 1 and 7.");
+            }
+        }
+    }
+
+    private void addDoctor() {
+        System.out.print("Enter Doctor ID (format Dxxx, e.g., D001): ");
+        String id = scanner.nextLine().trim();
+        System.out.print("Enter Doctor Name: ");
+        String name = scanner.nextLine().trim();
+        System.out.print("Enter Specialty: ");
+        String specialty = scanner.nextLine().trim();
+        System.out.print("Enter Schedule (e.g., Monday 9-12,Tuesday 10-13): ");
+        String[] schedule = scanner.nextLine().trim().split(",");
+        String result = control.addDoctor(id, name, specialty, schedule);
+        System.out.println(result);
+    }
+
+    private void updateDoctor() {
+        System.out.print("Enter Doctor ID to update (format Dxxx, e.g., D001): ");
+        String id = scanner.nextLine().trim();
+        System.out.print("Enter New Doctor Name: ");
+        String name = scanner.nextLine().trim();
+        System.out.print("Enter New Specialty: ");
+        String specialty = scanner.nextLine().trim();
+        System.out.print("Enter New Schedule (e.g., Monday 9-12,Tuesday 10-13): ");
+        String[] schedule = scanner.nextLine().trim().split(",");
+        String result = control.updateDoctor(id, name, specialty, schedule);
+        System.out.println(result);
+    }
+
+    private void deleteDoctor() {
+        System.out.print("Enter Doctor ID to delete (format Dxxx, e.g., D001): ");
+        String id = scanner.nextLine().trim();
+        String result = control.deleteDoctor(id);
+        System.out.println(result);
+    }
+
+    private void viewDoctor() {
+        ListInterface<Doctor> doctors = control.getAllDoctors();
+        int totalSchedules = 0;
+        int totalHours = 0;
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            Doctor doctor = doctors.getEntry(i);
+            totalSchedules += doctor.getSchedule().getNumberOfEntries();
+            ListInterface<String> schedule = doctor.getSchedule();
+            for (int j = 1; j <= schedule.getNumberOfEntries(); j++) {
+                String[] parts = schedule.getEntry(j).split("\\s+");
+                String[] times = parts[1].split("-");
+                totalHours += Integer.parseInt(times[1]) - Integer.parseInt(times[0]);
+            }
+        }
+        double avgHours = doctors.getNumberOfEntries() > 0 ? (double) totalHours / doctors.getNumberOfEntries() : 0;
+
+        System.out.println("\n=== Doctor Management System ===");
+        System.out.println("Total Doctors: " + doctors.getNumberOfEntries());
+        System.out.println("Total Schedule Slots: " + totalSchedules);
+        System.out.println("Total Scheduled Hours: " + totalHours);
+        System.out.println(String.format("Average Hours per Doctor: %.2f", avgHours));
+        System.out.println("==========");
+        if (doctors.isEmpty()) {
+            System.out.println("No doctors available.");
+            System.out.println("==========");
+        } else {
+            for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+                Doctor doctor = doctors.getEntry(i);
+                ListInterface<String> schedule = doctor.getSchedule();
+                int doctorHours = 0;
+                for (int j = 1; j <= schedule.getNumberOfEntries(); j++) {
+                    String[] parts = schedule.getEntry(j).split("\\s+");
+                    String[] times = parts[1].split("-");
+                    doctorHours += Integer.parseInt(times[1]) - Integer.parseInt(times[0]);
+                }
+                System.out.println("Doctor " + i + ":");
+                System.out.println("ID: " + doctor.getId());
+                System.out.println("Name: " + doctor.getName());
+                System.out.println("Specialty: " + doctor.getSpecialty());
+                System.out.println("Total Hours: " + doctorHours);
+                System.out.println("Schedules:");
+                if (schedule.isEmpty()) {
+                    System.out.println("  - No schedule assigned.");
+                } else {
+                    for (int j = 1; j <= schedule.getNumberOfEntries(); j++) {
+                        System.out.println("  - " + schedule.getEntry(j));
+                    }
+                }
+                System.out.println("==========");
+            }
+        }
+    }
+}
