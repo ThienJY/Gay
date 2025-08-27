@@ -1,0 +1,226 @@
+//Ethan
+package control;
+
+import adt.List;
+import adt.ListInterface;
+import entity.Doctor;
+import utility.DateUtils;
+
+public class DoctorManagementControl {
+    private ListInterface<Doctor> doctors;
+    private static final String[] DAY_ORDER = {
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    };
+
+    public DoctorManagementControl() {
+        doctors = new List<>();
+        ListInterface<String> schedule1 = new List<>();
+        schedule1.add("Monday 9-12");
+        schedule1.add("Wednesday 14-17");
+        doctors.add(new Doctor("D001", "Dr. Alice Smith", "Cardiology", schedule1));
+
+        ListInterface<String> schedule2 = new List<>();
+        schedule2.add("Tuesday 10-13");
+        schedule2.add("Thursday 15-18");
+        doctors.add(new Doctor("D002", "Dr. Bob Johnson", "Pediatrics", schedule2));
+    }
+
+    public String addDoctor(String id, String name, String specialty, String[] scheduleInputs) {
+        if (!id.matches("D\\d{3}")) {
+            return "Invalid ID format. ID must be Dxxx (e.g., D001).";
+        }
+        if (getDoctor(id) != null) {
+            return "Doctor ID " + id + " already exists.";
+        }
+        if (name == null || name.trim().isEmpty()) {
+            return "Name cannot be empty.";
+        }
+        if (specialty == null || specialty.trim().isEmpty()) {
+            return "Specialty cannot be empty.";
+        }
+        ListInterface<String> schedule = new List<>();
+        for (String input : scheduleInputs) {
+            String[] parts = input.trim().split("\\s+");
+            if (parts.length == 2 && DateUtils.isValidSchedule(parts[0], parts[1])) {
+                schedule.add(formatSchedule(parts[0], parts[1]));
+            } else {
+                return "Invalid schedule entry: " + input + ". Format must be 'Day HH-HH'.";
+            }
+        }
+        schedule = sortSchedules(schedule);
+        Doctor doctor = new Doctor(id, name.trim(), specialty.trim(), schedule);
+        doctors.add(doctor);
+        return "Doctor added successfully.";
+    }
+
+    public Doctor getDoctor(String id) {
+        if (!id.matches("D\\d{3}")) {
+            return null;
+        }
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            Doctor doctor = doctors.getEntry(i);
+            if (doctor.getId().equals(id)) {
+                return doctor;
+            }
+        }
+        return null;
+    }
+
+    public String updateDoctor(String id, String name, String specialty, String[] scheduleInputs) {
+        if (!id.matches("D\\d{3}")) {
+            return "Invalid ID format. ID must be Dxxx (e.g., D001).";
+        }
+        Doctor doctor = getDoctor(id);
+        if (doctor == null) {
+            return "Doctor ID " + id + " not found.";
+        }
+        if (name == null || name.trim().isEmpty()) {
+            return "Name cannot be empty.";
+        }
+        if (specialty == null || specialty.trim().isEmpty()) {
+            return "Specialty cannot be empty.";
+        }
+        ListInterface<String> schedule = new List<>();
+        for (String input : scheduleInputs) {
+            String[] parts = input.trim().split("\\s+");
+            if (parts.length == 2 && DateUtils.isValidSchedule(parts[0], parts[1])) {
+                schedule.add(formatSchedule(parts[0], parts[1]));
+            } else {
+                return "Invalid schedule entry: " + input + ". Format must be 'Day HH-HH'.";
+            }
+        }
+        schedule = sortSchedules(schedule);
+        doctor.setName(name.trim());
+        doctor.setSpecialty(specialty.trim());
+        doctor.setSchedule(schedule);
+        return "Doctor updated successfully.";
+    }
+
+    public String deleteDoctor(String id) {
+        if (!id.matches("D\\d{3}")) {
+            return "Invalid ID format. ID must be Dxxx (e.g., D001).";
+        }
+        Doctor doctor = getDoctor(id);
+        if (doctor != null) {
+            for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+                if (doctors.getEntry(i).getId().equals(id)) {
+                    doctors.remove(i);
+                    return "Doctor deleted successfully.";
+                }
+            }
+        }
+        return "Doctor ID " + id + " not found.";
+    }
+
+    public ListInterface<Doctor> getAllDoctors() {
+        return doctors;
+    }
+
+    public String generateSpecialtySummaryReport() {
+        StringBuilder report = new StringBuilder();
+        report.append("Specialty Summary Report\n");
+        report.append("=======================\n");
+        ListInterface<String> specialties = new List<>();
+        ListInterface<Integer> doctorCounts = new List<>();
+        ListInterface<Integer> totalHours = new List<>();
+
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            String specialty = doctors.getEntry(i).getSpecialty();
+            if (!specialtiesContains(specialties, specialty)) {
+                specialties.add(specialty);
+            }
+        }
+
+        for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
+            String specialty = specialties.getEntry(i);
+            int count = 0;
+            int hours = 0;
+            for (int j = 1; j <= doctors.getNumberOfEntries(); j++) {
+                Doctor doctor = doctors.getEntry(j);
+                if (doctor.getSpecialty().equals(specialty)) {
+                    count++;
+                    ListInterface<String> schedule = doctor.getSchedule();
+                    for (int k = 1; k <= schedule.getNumberOfEntries(); k++) {
+                        String[] parts = schedule.getEntry(k).split("\\s+");
+                        String[] times = parts[1].split("-");
+                        int startHour = Integer.parseInt(times[0]);
+                        int endHour = Integer.parseInt(times[1]);
+                        hours += endHour - startHour;
+                    }
+                }
+            }
+            doctorCounts.add(count);
+            totalHours.add(hours);
+        }
+
+        for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
+            report.append("Specialty: ").append(specialties.getEntry(i)).append("\n");
+            report.append("  - Number of Doctors: ").append(doctorCounts.getEntry(i)).append("\n");
+            report.append("  - Total Scheduled Hours: ").append(totalHours.getEntry(i)).append("\n");
+        }
+        return report.toString();
+    }
+
+    public String generateScheduleAvailabilityReport(String day) {
+        boolean validDay = false;
+        for (String validDayStr : DAY_ORDER) {
+            if (validDayStr.equalsIgnoreCase(day)) {
+                validDay = true;
+                break;
+            }
+        }
+        if (!validDay) {
+            return "Invalid day: " + day + ". Use Monday, Tuesday, etc.";
+        }
+
+        StringBuilder report = new StringBuilder();
+        report.append("Doctor Schedule Availability Report (").append(day).append(")\n");
+        report.append("===========================================\n");
+        boolean found = false;
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            Doctor doctor = doctors.getEntry(i);
+            ListInterface<String> schedule = doctor.getSchedule();
+            for (int j = 1; j <= schedule.getNumberOfEntries(); j++) {
+                String[] parts = schedule.getEntry(j).split("\\s+");
+                if (parts[0].equalsIgnoreCase(day)) {
+                    if (!found) {
+                        found = true;
+                    }
+                    report.append("Doctor: ").append(doctor.getName()).append(" (").append(doctor.getSpecialty()).append(")\n");
+                    report.append("  - ").append(parts[0]).append(" ").append(parts[1]).append("\n");
+                }
+            }
+        }
+        if (!found) {
+            report.append("No doctors available on ").append(day).append("\n");
+        }
+        return report.toString();
+    }
+
+    private boolean specialtiesContains(ListInterface<String> specialties, String specialty) {
+        for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
+            if (specialties.getEntry(i).equals(specialty)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private ListInterface<String> sortSchedules(ListInterface<String> schedule) {
+        ListInterface<String> sorted = new List<>();
+        for (String day : DAY_ORDER) {
+            for (int i = 1; i <= schedule.getNumberOfEntries(); i++) {
+                String entry = schedule.getEntry(i);
+                if (entry.startsWith(day)) {
+                    sorted.add(entry);
+                }
+            }
+        }
+        return sorted;
+    }
+
+    private String formatSchedule(String day, String timeRange) {
+        String[] times = timeRange.split("-");
+        return String.format("%s %s:00-%s:00", day, times[0], times[1]);
+    }
+}
