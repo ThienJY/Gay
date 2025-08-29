@@ -91,7 +91,7 @@ public class DoctorManagementUI {
     }
 
     private void deleteDoctor() {
-        System.out.print("Enter Doctor ID to delete (format Dxxx, e.g., D001): ");
+        System.out.println("Enter Doctor ID to delete (format Dxxx, e.g., D001): ");
         String id = scanner.nextLine().trim();
         String result = control.deleteDoctor(id);
         System.out.println(result);
@@ -108,7 +108,9 @@ public class DoctorManagementUI {
             for (int j = 1; j <= schedule.getNumberOfEntries(); j++) {
                 String[] parts = schedule.getEntry(j).split("\\s+");
                 String[] times = parts[1].split("-");
-                totalHours += Integer.parseInt(times[1]) - Integer.parseInt(times[0]);
+                String startHourStr = times[0].split(":")[0]; // Extract hour from "9:00"
+                String endHourStr = times[1].split(":")[0];   // Extract hour from "12:00"
+                totalHours += Integer.parseInt(endHourStr) - Integer.parseInt(startHourStr);
             }
         }
         double avgHours = doctors.getNumberOfEntries() > 0 ? (double) totalHours / doctors.getNumberOfEntries() : 0;
@@ -130,7 +132,9 @@ public class DoctorManagementUI {
                 for (int j = 1; j <= schedule.getNumberOfEntries(); j++) {
                     String[] parts = schedule.getEntry(j).split("\\s+");
                     String[] times = parts[1].split("-");
-                    doctorHours += Integer.parseInt(times[1]) - Integer.parseInt(times[0]);
+                    String startHourStr = times[0].split(":")[0]; // Extract hour from "9:00"
+                    String endHourStr = times[1].split(":")[0];   // Extract hour from "12:00"
+                    doctorHours += Integer.parseInt(endHourStr) - Integer.parseInt(startHourStr);
                 }
                 System.out.println("Doctor " + i + ":");
                 System.out.println("ID: " + doctor.getId());
