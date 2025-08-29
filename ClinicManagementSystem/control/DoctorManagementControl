@@ -12,19 +12,6 @@ public class DoctorManagementControl {
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
 
-    public DoctorManagementControl() {
-        doctors = new List<>();
-        ListInterface<String> schedule1 = new List<>();
-        schedule1.add("Monday 9-12");
-        schedule1.add("Wednesday 14-17");
-        doctors.add(new Doctor("D001", "Dr. Alice Smith", "Cardiology", schedule1));
-
-        ListInterface<String> schedule2 = new List<>();
-        schedule2.add("Tuesday 10-13");
-        schedule2.add("Thursday 15-18");
-        doctors.add(new Doctor("D002", "Dr. Bob Johnson", "Pediatrics", schedule2));
-    }
-
     public String addDoctor(String id, String name, String specialty, String[] scheduleInputs) {
         if (!id.matches("D\\d{3}")) {
             return "Invalid ID format. ID must be Dxxx (e.g., D001).";
@@ -117,50 +104,51 @@ public class DoctorManagementControl {
     }
 
     public String generateSpecialtySummaryReport() {
-        StringBuilder report = new StringBuilder();
-        report.append("Specialty Summary Report\n");
-        report.append("=======================\n");
-        ListInterface<String> specialties = new List<>();
-        ListInterface<Integer> doctorCounts = new List<>();
-        ListInterface<Integer> totalHours = new List<>();
+    StringBuilder report = new StringBuilder();
+    report.append("Specialty Summary Report\n");
+    report.append("=======================\n");
+    ListInterface<String> specialties = new List<>();
+    ListInterface<Integer> doctorCounts = new List<>();
+    ListInterface<Integer> totalHours = new List<>();
 
-        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
-            String specialty = doctors.getEntry(i).getSpecialty();
-            if (!specialtiesContains(specialties, specialty)) {
-                specialties.add(specialty);
-            }
+    for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+        String specialty = doctors.getEntry(i).getSpecialty();
+        if (!specialtiesContains(specialties, specialty)) {
+            specialties.add(specialty);
         }
-
-        for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
-            String specialty = specialties.getEntry(i);
-            int count = 0;
-            int hours = 0;
-            for (int j = 1; j <= doctors.getNumberOfEntries(); j++) {
-                Doctor doctor = doctors.getEntry(j);
-                if (doctor.getSpecialty().equals(specialty)) {
-                    count++;
-                    ListInterface<String> schedule = doctor.getSchedule();
-                    for (int k = 1; k <= schedule.getNumberOfEntries(); k++) {
-                        String[] parts = schedule.getEntry(k).split("\\s+");
-                        String[] times = parts[1].split("-");
-                        int startHour = Integer.parseInt(times[0]);
-                        int endHour = Integer.parseInt(times[1]);
-                        hours += endHour - startHour;
-                    }
-                }
-            }
-            doctorCounts.add(count);
-            totalHours.add(hours);
-        }
-
-        for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
-            report.append("Specialty: ").append(specialties.getEntry(i)).append("\n");
-            report.append("  - Number of Doctors: ").append(doctorCounts.getEntry(i)).append("\n");
-            report.append("  - Total Scheduled Hours: ").append(totalHours.getEntry(i)).append("\n");
-        }
-        return report.toString();
     }
 
+    for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
+        String specialty = specialties.getEntry(i);
+        int count = 0;
+        int hours = 0;
+        for (int j = 1; j <= doctors.getNumberOfEntries(); j++) {
+            Doctor doctor = doctors.getEntry(j);
+            if (doctor.getSpecialty().equals(specialty)) {
+                count++;
+                ListInterface<String> schedule = doctor.getSchedule();
+                for (int k = 1; k <= schedule.getNumberOfEntries(); k++) {
+                    String[] parts = schedule.getEntry(k).split("\\s+");
+                    String[] times = parts[1].split("-");
+                    String startHourStr = times[0].split(":")[0]; // Extract hour from "9:00"
+                    String endHourStr = times[1].split(":")[0];   // Extract hour from "12:00"
+                    int startHour = Integer.parseInt(startHourStr);
+                    int endHour = Integer.parseInt(endHourStr);
+                    hours += endHour - startHour;
+                }
+            }
+        }
+        doctorCounts.add(count);
+        totalHours.add(hours);
+    }
+
+    for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
+        report.append("Specialty: ").append(specialties.getEntry(i)).append("\n");
+        report.append("  - Number of Doctors: ").append(doctorCounts.getEntry(i)).append("\n");
+        report.append("  - Total Scheduled Hours: ").append(totalHours.getEntry(i)).append("\n");
+    }
+    return report.toString();
+}
     public String generateScheduleAvailabilityReport(String day) {
         boolean validDay = false;
         for (String validDayStr : DAY_ORDER) {
@@ -224,3 +212,4 @@ public class DoctorManagementControl {
         return String.format("%s %s:00-%s:00", day, times[0], times[1]);
     }
 }
+
