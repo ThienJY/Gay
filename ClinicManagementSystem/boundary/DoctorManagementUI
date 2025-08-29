@@ -65,26 +65,26 @@ public class DoctorManagementUI {
     }
 
     private void addDoctor() {
-        System.out.print("Enter Doctor ID (format Dxxx, e.g., D001): ");
+        System.out.println("Enter Doctor ID (format Dxxx, e.g., D001): ");
         String id = scanner.nextLine().trim();
-        System.out.print("Enter Doctor Name: ");
+        System.out.println("Enter Doctor Name: ");
         String name = scanner.nextLine().trim();
-        System.out.print("Enter Specialty: ");
+        System.out.println("Enter Specialty: ");
         String specialty = scanner.nextLine().trim();
-        System.out.print("Enter Schedule (e.g., Monday 9-12,Tuesday 10-13): ");
+        System.out.println("Enter Schedule (e.g., Monday 9-12,Tuesday 10-13): ");
         String[] schedule = scanner.nextLine().trim().split(",");
         String result = control.addDoctor(id, name, specialty, schedule);
         System.out.println(result);
     }
 
     private void updateDoctor() {
-        System.out.print("Enter Doctor ID to update (format Dxxx, e.g., D001): ");
+        System.out.println("Enter Doctor ID to update (format Dxxx, e.g., D001): ");
         String id = scanner.nextLine().trim();
-        System.out.print("Enter New Doctor Name: ");
+        System.out.println("Enter New Doctor Name: ");
         String name = scanner.nextLine().trim();
-        System.out.print("Enter New Specialty: ");
+        System.out.println("Enter New Specialty: ");
         String specialty = scanner.nextLine().trim();
-        System.out.print("Enter New Schedule (e.g., Monday 9-12,Tuesday 10-13): ");
+        System.out.println("Enter New Schedule (e.g., Monday 9-12,Tuesday 10-13): ");
         String[] schedule = scanner.nextLine().trim().split(",");
         String result = control.updateDoctor(id, name, specialty, schedule);
         System.out.println(result);
