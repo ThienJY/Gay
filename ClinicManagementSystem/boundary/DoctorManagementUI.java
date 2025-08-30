@@ -108,8 +108,8 @@ public class DoctorManagementUI {
             for (int j = 1; j <= schedule.getNumberOfEntries(); j++) {
                 String[] parts = schedule.getEntry(j).split("\\s+");
                 String[] times = parts[1].split("-");
-                String startHourStr = times[0].split(":")[0]; // Extract hour from "9:00"
-                String endHourStr = times[1].split(":")[0];   // Extract hour from "12:00"
+                String startHourStr = times[0].split(":")[0]; 
+                String endHourStr = times[1].split(":")[0];   
                 totalHours += Integer.parseInt(endHourStr) - Integer.parseInt(startHourStr);
             }
         }
@@ -132,8 +132,8 @@ public class DoctorManagementUI {
                 for (int j = 1; j <= schedule.getNumberOfEntries(); j++) {
                     String[] parts = schedule.getEntry(j).split("\\s+");
                     String[] times = parts[1].split("-");
-                    String startHourStr = times[0].split(":")[0]; // Extract hour from "9:00"
-                    String endHourStr = times[1].split(":")[0];   // Extract hour from "12:00"
+                    String startHourStr = times[0].split(":")[0]; 
+                    String endHourStr = times[1].split(":")[0];   
                     doctorHours += Integer.parseInt(endHourStr) - Integer.parseInt(startHourStr);
                 }
                 System.out.println("Doctor " + i + ":");
