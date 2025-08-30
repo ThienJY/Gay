@@ -17,12 +17,7 @@ public class PatientMaintenanceUI {
 
     public int getMenuSelect() {
         while (true) {
-            System.out.println("""
-                               == Patient Management Page ==
-                               1. Patient register
-                               2. Gender Report
-                               3. Patient List Report
-                               4. Exit""");
+     System.out.println("== Patient Management Page ==\n" + "1. Patient register\n" + "2. Gender Report\n" + "3. Patient List Report\n" + "4. Exit");
             System.out.print(" > ");
             String input = scanner.nextLine().trim();
             try {
