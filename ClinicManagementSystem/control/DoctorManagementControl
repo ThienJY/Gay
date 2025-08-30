@@ -12,7 +12,7 @@ public class DoctorManagementControl {
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
  public DoctorManagementControl() {
-        doctors = new List<>(); // Initialize empty doctors list
+        doctors = new List<>(); 
     }
     public String addDoctor(String id, String name, String specialty, String[] scheduleInputs) {
         if (!id.matches("D\\d{3}")) {
@@ -132,8 +132,8 @@ public class DoctorManagementControl {
                 for (int k = 1; k <= schedule.getNumberOfEntries(); k++) {
                     String[] parts = schedule.getEntry(k).split("\\s+");
                     String[] times = parts[1].split("-");
-                    String startHourStr = times[0].split(":")[0]; // Extract hour from "9:00"
-                    String endHourStr = times[1].split(":")[0];   // Extract hour from "12:00"
+                    String startHourStr = times[0].split(":")[0]; 
+                    String endHourStr = times[1].split(":")[0];   
                     int startHour = Integer.parseInt(startHourStr);
                     int endHour = Integer.parseInt(endHourStr);
                     hours += endHour - startHour;
