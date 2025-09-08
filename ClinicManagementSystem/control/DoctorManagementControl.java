@@ -4,16 +4,29 @@ package control;
 import adt.List;
 import adt.ListInterface;
 import entity.Doctor;
+import utility.DoctorFile;
 import utility.DateUtils;
 
 public class DoctorManagementControl {
     private ListInterface<Doctor> doctors;
+    private DoctorFile doctorFile;
     private static final String[] DAY_ORDER = {
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     };
- public DoctorManagementControl() {
-        doctors = new List<>(); 
+
+    public DoctorManagementControl() {
+        doctorFile = new DoctorFile();
+        doctors = doctorFile.readFromFile();
+        if (doctors.isEmpty()) {
+            doctors = new List<>();
+            initializeDoctors();
+        }
     }
+
+    private void initializeDoctors() {
+     
+    }
+
     public String addDoctor(String id, String name, String specialty, String[] scheduleInputs) {
         if (!id.matches("D\\d{3}")) {
             return "Invalid ID format. ID must be Dxxx (e.g., D001).";
@@ -39,7 +52,8 @@ public class DoctorManagementControl {
         schedule = sortSchedules(schedule);
         Doctor doctor = new Doctor(id, name.trim(), specialty.trim(), schedule);
         doctors.add(doctor);
-        return "Doctor added successfully.";
+        boolean saved = doctorFile.saveToFile(doctors);
+        return saved ? "Doctor added successfully." : "Doctor added but failed to save to file.";
     }
 
     public Doctor getDoctor(String id) {
@@ -82,7 +96,8 @@ public class DoctorManagementControl {
         doctor.setName(name.trim());
         doctor.setSpecialty(specialty.trim());
         doctor.setSchedule(schedule);
-        return "Doctor updated successfully.";
+        boolean saved = doctorFile.saveToFile(doctors);
+        return saved ? "Doctor updated successfully." : "Doctor updated but failed to save to file.";
     }
 
     public String deleteDoctor(String id) {
@@ -94,7 +109,8 @@ public class DoctorManagementControl {
             for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
                 if (doctors.getEntry(i).getId().equals(id)) {
                     doctors.remove(i);
-                    return "Doctor deleted successfully.";
+                    boolean saved = doctorFile.saveToFile(doctors);
+                    return saved ? "Doctor deleted successfully." : "Doctor deleted but failed to save to file.";
                 }
             }
         }
@@ -106,51 +122,52 @@ public class DoctorManagementControl {
     }
 
     public String generateSpecialtySummaryReport() {
-    StringBuilder report = new StringBuilder();
-    report.append("Specialty Summary Report\n");
-    report.append("=======================\n");
-    ListInterface<String> specialties = new List<>();
-    ListInterface<Integer> doctorCounts = new List<>();
-    ListInterface<Integer> totalHours = new List<>();
+        StringBuilder report = new StringBuilder();
+        report.append("Specialty Summary Report\n");
+        report.append("=======================\n");
+        ListInterface<String> specialties = new List<>();
+        ListInterface<Integer> doctorCounts = new List<>();
+        ListInterface<Integer> totalHours = new List<>();
 
-    for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
-        String specialty = doctors.getEntry(i).getSpecialty();
-        if (!specialtiesContains(specialties, specialty)) {
-            specialties.add(specialty);
-        }
-    }
-
-    for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
-        String specialty = specialties.getEntry(i);
-        int count = 0;
-        int hours = 0;
-        for (int j = 1; j <= doctors.getNumberOfEntries(); j++) {
-            Doctor doctor = doctors.getEntry(j);
-            if (doctor.getSpecialty().equals(specialty)) {
-                count++;
-                ListInterface<String> schedule = doctor.getSchedule();
-                for (int k = 1; k <= schedule.getNumberOfEntries(); k++) {
-                    String[] parts = schedule.getEntry(k).split("\\s+");
-                    String[] times = parts[1].split("-");
-                    String startHourStr = times[0].split(":")[0]; 
-                    String endHourStr = times[1].split(":")[0];   
-                    int startHour = Integer.parseInt(startHourStr);
-                    int endHour = Integer.parseInt(endHourStr);
-                    hours += endHour - startHour;
-                }
+        for (int i = 1; i <= doctors.getNumberOfEntries(); i++) {
+            String specialty = doctors.getEntry(i).getSpecialty();
+            if (!specialtiesContains(specialties, specialty)) {
+                specialties.add(specialty);
             }
         }
-        doctorCounts.add(count);
-        totalHours.add(hours);
+
+        for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
+            String specialty = specialties.getEntry(i);
+            int count = 0;
+            int hours = 0;
+            for (int j = 1; j <= doctors.getNumberOfEntries(); j++) {
+                Doctor doctor = doctors.getEntry(j);
+                if (doctor.getSpecialty().equals(specialty)) {
+                    count++;
+                    ListInterface<String> schedule = doctor.getSchedule();
+                    for (int k = 1; k <= schedule.getNumberOfEntries(); k++) {
+                        String[] parts = schedule.getEntry(k).split("\\s+");
+                        String[] times = parts[1].split("-");
+                        String startHourStr = times[0].split(":")[0];
+                        String endHourStr = times[1].split(":")[0];
+                        int startHour = Integer.parseInt(startHourStr);
+                        int endHour = Integer.parseInt(endHourStr);
+                        hours += endHour - startHour;
+                    }
+                }
+            }
+            doctorCounts.add(count);
+            totalHours.add(hours);
+        }
+
+        for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
+            report.append("Specialty: ").append(specialties.getEntry(i)).append("\n");
+            report.append("  - Number of Doctors: ").append(doctorCounts.getEntry(i)).append("\n");
+            report.append("  - Total Scheduled Hours: ").append(totalHours.getEntry(i)).append("\n");
+        }
+        return report.toString();
     }
 
-    for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
-        report.append("Specialty: ").append(specialties.getEntry(i)).append("\n");
-        report.append("  - Number of Doctors: ").append(doctorCounts.getEntry(i)).append("\n");
-        report.append("  - Total Scheduled Hours: ").append(totalHours.getEntry(i)).append("\n");
-    }
-    return report.toString();
-}
     public String generateScheduleAvailabilityReport(String day) {
         boolean validDay = false;
         for (String validDayStr : DAY_ORDER) {
@@ -187,6 +204,10 @@ public class DoctorManagementControl {
         return report.toString();
     }
 
+    public boolean saveToFile() {
+        return doctorFile.saveToFile(doctors);
+    }
+
     private boolean specialtiesContains(ListInterface<String> specialties, String specialty) {
         for (int i = 1; i <= specialties.getNumberOfEntries(); i++) {
             if (specialties.getEntry(i).equals(specialty)) {
@@ -214,4 +235,6 @@ public class DoctorManagementControl {
         return String.format("%s %s:00-%s:00", day, times[0], times[1]);
     }
 }
+
+
 
