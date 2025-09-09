@@ -23,8 +23,8 @@ public class ConsultationUI {
         System.out.println("1. Assign Consultation");
         System.out.println("2. Schedule appointment");
         System.out.println("3. View waiting queue");
-        System.out.println("4. Serve next patient");
-        System.out.println("5. Peek next patient");
+        System.out.println("4. Peek next patient");
+        System.out.println("5. Serve next patient");
         System.out.println("6. View consultation history (completed)");
         System.out.println("7. Generate Report");
         System.out.println("0. Back to Main Menu");
