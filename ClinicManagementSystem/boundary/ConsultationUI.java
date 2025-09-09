@@ -20,11 +20,11 @@ public class ConsultationUI {
 
     public int getMenuChoice() {
         System.out.println("\nCONSULTATION MANAGEMENT MENU");
-        System.out.println("1. Assign Consultation");
-        System.out.println("2. Schedule appointment");
-        System.out.println("3. View waiting queue");
-        System.out.println("4. Peek next patient");
-        System.out.println("5. Serve next patient");
+        System.out.println("1. Enqueue Patient");
+        System.out.println("2. View Waiting Queue");
+        System.out.println("3. Peek Next Patient");
+        System.out.println("4. Serve Next Patient");
+        System.out.println("5. Schedule Appointment");
         System.out.println("6. View consultation history (completed)");
         System.out.println("7. Generate Report");
         System.out.println("0. Back to Main Menu");
