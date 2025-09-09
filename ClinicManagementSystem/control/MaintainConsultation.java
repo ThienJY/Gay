@@ -26,10 +26,10 @@ public class MaintainConsultation {
             int choice = ui.getMenuChoice();
             switch (choice) {
                 case 1: enqueueWalkIn(); break;
-                case 2: scheduleAppointment(); break;
-                case 3: ui.showQueue(queueToString()); break;
-                case 4: serveNext(); break;
-                case 5: peekNext(); break;
+                case 2: ui.showQueue(queueToString()); break;
+                case 3: serveNext(); break;
+                case 4: peekNext(); break;
+                case 5: scheduleAppointment(); break;
                 case 6: ui.showHistory(historyToString()); break;
                 case 7: ui.showReports(generateReports()); break;
                 case 0: cont = false; break;
